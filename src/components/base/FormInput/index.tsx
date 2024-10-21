@@ -1,26 +1,10 @@
-import React, { useState, useEffect } from "react";
-
 type FormInputProps = {
-  addTodo: (text: string) => void;
-  submitTrigger: number;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: () => void;
 };
 
-const FormInput: React.FC<FormInputProps> = ({ addTodo, submitTrigger }) => {
-  const [input, setInput] = useState("");
-
-  useEffect(() => {
-    if (submitTrigger > 0) {
-      handleSubmit();
-    }
-  }, [submitTrigger]);
-
-  const handleSubmit = () => {
-    if (input.trim()) {
-      addTodo(input);
-      setInput("");
-    }
-  };
-
+const FormInput: React.FC<FormInputProps> = ({ value, onChange, onSubmit }) => {
   return (
     <div className="flex-grow">
       <input
@@ -28,11 +12,11 @@ const FormInput: React.FC<FormInputProps> = ({ addTodo, submitTrigger }) => {
         id="new-todo"
         placeholder="Add a new task"
         className="w-full p-2 text-base border border-gray-300 rounded-l-full focus:outline-none focus:border-gray-700 transition-all duration-300"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
+        value={value}
+        onChange={onChange}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            handleSubmit();
+            onSubmit();
           }
         }}
       />

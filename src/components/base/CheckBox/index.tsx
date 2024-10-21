@@ -1,5 +1,3 @@
-import React from "react";
-
 type CheckBoxProps = {
   checked: boolean;
   onChange: () => void;
