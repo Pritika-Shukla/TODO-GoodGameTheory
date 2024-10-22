@@ -50,9 +50,6 @@ const HomeContainer: React.FC = () => {
       )
     );
   };
-
-
-
   return (
     <HomeView
       todos={todos}
