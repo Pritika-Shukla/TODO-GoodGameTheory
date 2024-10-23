@@ -32,9 +32,11 @@ const HomeView: React.FC<HomeViewProps> = ({
 
       <div>
         <Form
-          value={inputValue}
-          onChange={onChange}
-          onSubmit={onSubmit}
+              value={inputValue}
+              onChange={onChange}
+              onSubmit={onSubmit} onKeyPress={function (): void {
+                throw new Error('Function not implemented.');
+              } }          
         />
       </div>
       <div>

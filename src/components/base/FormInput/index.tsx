@@ -4,7 +4,9 @@ type FormInputProps = {
   value?: string;
   placeholder?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit?: () => void;  
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void; 
+  onSubmit?: () => void;
+  className?: string; 
 };
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -13,22 +15,21 @@ const FormInput: React.FC<FormInputProps> = ({
   value,
   placeholder,
   onChange,
-  onSubmit, 
+  onSubmit,
+  onKeyPress,
+  className, 
 }) => {
   return (
     <div className="flex-grow">
       <input
-        type={type} // Pass the type prop
+        type={type}
         name={name}
         placeholder={placeholder}
-        className="w-full p-2 text-base border border-gray-300 rounded-l-full focus:outline-none focus:border-gray-700 transition-all duration-300"
         value={value}
         onChange={onChange}
-        onKeyPress={(e) => {
-          if (onSubmit && e.key === 'Enter') {
-            onSubmit();
-          }
-        }}
+        onKeyPress={onKeyPress}
+     
+        className={`w-full p-2 text-base border border-gray-300 rounded-l-full focus:outline-none focus:border-gray-700 transition-all duration-300 ${className}`} 
       />
     </div>
   );

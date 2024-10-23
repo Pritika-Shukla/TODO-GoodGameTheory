@@ -1,37 +1,72 @@
-import FormButton from "../../components/base/FormButton";
-import FormInput from "../../components/base/FormInput";
+import FormInput from '../../components/base/FormInput';
+import FormButton from '../../components/base/FormButton';
 
-type LoginProps = {
-  type: string;
+interface LoginProps {
   email: string;
   password: string;
   onClick: () => void;
-  handleChange: (e?: any) => void; 
-};
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
+  error?: string | null;
+  loading?: boolean;
+}
 
-const LoginView = ({ email, password, onClick, handleChange }: LoginProps) => {
+const LoginView = ({ 
+  email, 
+  password, 
+  onClick, 
+  handleChange, 
+  className,
+  error,
+  loading 
+}: LoginProps) => {
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-center text-gray-900">
-        Welcome Back
-      </h1>
-      <p className="text-center text-gray-600">Please sign in to your account</p>
-      <FormInput
-        type="text"
-        name="email"
-        value={email}
-        onChange={handleChange} 
-        placeholder="Email"
-      />
-      <FormInput
-        type="password"
-        name="password"
-        value={password}
-        onChange={handleChange} 
-        placeholder="password"
-      />
-      <FormButton onClick={onClick}>Login</FormButton>
+    <div className={`w-full max-w-md mx-auto p-8 space-y-6 bg-white rounded-lg shadow-lg ${className}`}>
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-center text-gray-900">
+          Welcome Back
+        </h1>
+        <p className="text-center text-gray-600">
+          Please Log in to your account
+        </p>
+      </div>
+
+      <form onSubmit={(e) => { e.preventDefault(); onClick(); }} className="space-y-4">
+        <FormInput
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleChange}
+          placeholder="Enter your email"
+          className="rounded-full"
+          
+        />
+
+        <FormInput
+          type="password"
+          name="password"
+          value={password}
+          onChange={handleChange}
+          placeholder="Enter your password"
+          className="rounded-full"
+          
+        />
+
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
+
+        <FormButton 
+          type="submit"
+          onClick={onClick}
+          className="rounded-full w-full"
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </FormButton>
+      </form>
     </div>
   );
 };
+
 export default LoginView;
