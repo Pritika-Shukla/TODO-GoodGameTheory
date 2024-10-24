@@ -34,6 +34,8 @@ const LoginContainer = () => {
     };
 
     return (
+        <div className="  flex justify-center items-center mx-auto h-screen">
+
         <LoginView
             email={loginForm.email}
             password={loginForm.password}
@@ -42,6 +44,7 @@ const LoginContainer = () => {
             error={error}
             loading={loading}
         />
+        </div>
     );
 };
 

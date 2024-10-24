@@ -1,5 +1,6 @@
 import FormInput from '../../components/base/FormInput';
 import FormButton from '../../components/base/FormButton';
+import { useNavigate } from "react-router-dom";
 
 interface LoginProps {
   email: string;
@@ -20,6 +21,7 @@ const LoginView = ({
   error,
   loading 
 }: LoginProps) => {
+  const navigate = useNavigate();
   return (
     <div className={`w-full max-w-md mx-auto p-8 space-y-6 bg-white rounded-lg shadow-lg ${className}`}>
       <div className="space-y-2">
@@ -65,6 +67,12 @@ const LoginView = ({
           {loading ? 'Logging in...' : 'Login'}
         </FormButton>
       </form>
+      <p className="text-gray-400 font-semibold mb-4">
+        Don't have an account?{" "}
+        <span className="underline cursor-pointer " onClick={() => navigate("/")}>
+          Signup
+        </span>
+      </p>
     </div>
   );
 };

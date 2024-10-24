@@ -1,5 +1,6 @@
 import FormButton from "../../components/base/FormButton";
 import FormInput from "../../components/base/FormInput";
+import { useNavigate } from "react-router-dom";
 
 type SignUpProps = {
   email: string;
@@ -17,6 +18,7 @@ const SignUpView = ({
   className,
   onClick,
 }: SignUpProps) => {
+  const navigate = useNavigate();
   return (
     <div className={`w-full max-w-md mx-auto p-8 space-y-6 bg-white rounded-lg shadow-lg ${className}`}>
     <div className="space-y-2">
@@ -49,10 +51,16 @@ const SignUpView = ({
 
       <FormButton 
         onClick={onClick}
-        className='rounded-full' >
+        className='rounded-full w-full' >
         Signup
       </FormButton>
     </div>
+    <p className="text-gray-400 font-semibold mb-4">
+        Already have an account?{" "}
+        <span className="underline cursor-pointer " onClick={() => navigate("/login")}>
+          Login
+        </span>
+      </p>
   </div>
 );
 };
