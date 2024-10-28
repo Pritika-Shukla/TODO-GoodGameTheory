@@ -9,6 +9,7 @@ type SignUpProps = {
   onClick: () => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
+  error?: string | null;
 };
 
 const SignUpView = ({
@@ -17,52 +18,57 @@ const SignUpView = ({
   handleChange,
   className,
   onClick,
+  error,
 }: SignUpProps) => {
   const navigate = useNavigate();
   return (
-    <div className={`w-full max-w-md mx-auto p-8 space-y-6 bg-white rounded-lg shadow-lg ${className}`}>
-    <div className="space-y-2">
-      <h1 className="text-3xl font-bold text-center text-gray-900">
-        Welcome 
-      </h1>
-      <p className="text-center text-gray-600">
-        Please Signup to your account
-      </p>
-    </div>
+    <div
+      className={`w-full max-w-md mx-auto p-8 space-y-6 bg-white rounded-lg shadow-lg ${className}`}
+    >
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-center text-gray-900">
+          Welcome
+        </h1>
+        <p className="text-center text-gray-600">
+          Please Signup to your account
+        </p>
+      </div>
 
-    <div className="space-y-4">
-      <FormInput
-        type="text"
-        name="email"
-        value={email}
-        onChange={handleChange}
-        placeholder="Enter your email"
-        className='rounded-full'
-      />
+      <div className="space-y-4">
+        <FormInput
+          type="text"
+          name="email"
+          value={email}
+          onChange={handleChange}
+          placeholder="Enter your email"
+          className="rounded-full"
+        />
 
-      <FormInput
-        type="password"
-        name="password"
-        value={password}
-        onChange={handleChange}
-        placeholder="Enter your password"
-        className='rounded-full'
-      />
+        <FormInput
+          type="password"
+          name="password"
+          value={password}
+          onChange={handleChange}
+          placeholder="Enter your password"
+          className="rounded-full"
+        />
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-      <FormButton 
-        onClick={onClick}
-        className='rounded-full w-full' >
-        Signup
-      </FormButton>
-    </div>
-    <p className="text-gray-400 font-semibold mb-4">
+        <FormButton onClick={onClick} className="rounded-full w-full">
+          Signup
+        </FormButton>
+      </div>
+      <p className="text-gray-400 font-semibold mb-4">
         Already have an account?{" "}
-        <span className="underline cursor-pointer " onClick={() => navigate("/login")}>
+        <span
+          className="underline cursor-pointer "
+          onClick={() => navigate("/login")}
+        >
           Login
         </span>
       </p>
-  </div>
-);
+    </div>
+  );
 };
 
 export default SignUpView;

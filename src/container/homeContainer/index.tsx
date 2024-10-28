@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useAuth } from "../../contexts/AuthContext";
 import HomeView from "../../views/HomeView";
 
 type Todo = {
@@ -9,20 +9,24 @@ type Todo = {
 };
 
 const HomeContainer: React.FC = () => {
-  
+  const { user } = useAuth(); 
   const [inputValue, setInputValue] = useState("");
 
   const getStoredTodos = (): Todo[] => {
-    const storedData = localStorage.getItem("ToDoList");
+    const storedData = localStorage.getItem(`ToDoList_${user?.uid}`);
     return storedData ? JSON.parse(storedData) : [];
   };
 
   const [todos, setTodos] = useState<Todo[]>(getStoredTodos());
 
   useEffect(() => {
-    localStorage.setItem("ToDoList", JSON.stringify(todos));
-  }, [todos]);
+    // Only store todos if there's a logged-in user
+    if (user) {
+      localStorage.setItem(`ToDoList_${user.uid}`, JSON.stringify(todos));
+    }
+  }, [todos, user]);
 
+ 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };

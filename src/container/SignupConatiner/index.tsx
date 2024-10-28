@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SignUpView from "../../views/SignUpView";
-import { signUp } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const SignupContainer = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();  // Access signUp from context
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [signupForm, setSignupForm] = useState({
@@ -18,7 +19,7 @@ const SignupContainer = () => {
     setError(null);
 
     try {
-      await signUp({ email, password });
+      await signUp(email, password);  // Call signUp with parameters directly
       navigate("/home");
     } catch (error) {
       const errorMessage =
@@ -35,17 +36,15 @@ const SignupContainer = () => {
   };
 
   return (
-    <div className="  flex justify-center items-center mx-auto h-screen">
+    <div className="flex justify-center items-center mx-auto h-screen">
       <SignUpView
         email={signupForm.email}
         password={signupForm.password}
         handleChange={handleChange}
         onClick={handleSubmit}
-        //@ts-ignore
         error={error}
         loading={loading}
       />
-      
     </div>
   );
 };
