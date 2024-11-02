@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import HomeView from "../../views/HomeView";
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+  onSnapshot
+} from "firebase/firestore";
+import { db } from "../../utils/firebaseConfig";
 
 type Todo = {
   id: string;
@@ -9,52 +18,73 @@ type Todo = {
 };
 
 const HomeContainer: React.FC = () => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [inputValue, setInputValue] = useState("");
-
-  const getStoredTodos = (): Todo[] => {
-    const storedData = localStorage.getItem(`ToDoList_${user?.uid}`);
-    return storedData ? JSON.parse(storedData) : [];
-  };
-
-  const [todos, setTodos] = useState<Todo[]>(getStoredTodos());
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [collectionName, setCollectionName] = useState<string>("");
 
   useEffect(() => {
-    // Only store todos if there's a logged-in user
     if (user) {
-      localStorage.setItem(`ToDoList_${user.uid}`, JSON.stringify(todos));
+      const userName = (user.displayName || user.email || user.uid)
+        .split('@')[0]  
+        .replace(/[^a-zA-Z0-9]/g, '_')  
+        .toLowerCase();  
+      
+      setCollectionName(userName + "_todos");
     }
-  }, [todos, user]);
+  }, [user]);
 
- 
+  useEffect(() => {
+    if (user && collectionName) {
+      const userTodosRef = collection(db, collectionName);
+      
+      const unsubscribe = onSnapshot(userTodosRef, (snapshot) => {
+        const fetchedTodos: Todo[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<Todo, 'id'>),
+        }));
+        setTodos(fetchedTodos);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [user, collectionName]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleSubmit = () => {
-    if (inputValue.trim() !== "") {
-      const newTodo: Todo = {
-        id: new Date().getTime().toString(),
+  const handleDelete = async (id: string) => {
+    if (!user || !collectionName) return;
+    await deleteDoc(doc(db, collectionName, id));
+  };
+
+  const handleSubmit = async () => {
+    if (inputValue.trim() !== "" && user && collectionName) {
+      const newTodo = {
         text: inputValue.trim(),
         completed: false,
+        createdAt: new Date(),
       };
-      setTodos((prevTodos) => [...prevTodos, newTodo]);
+      
+      await addDoc(collection(db, collectionName), newTodo);
       setInputValue("");
     }
   };
 
-  const handleDelete = (id: string) => {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  const handleToggle = async (id: string, completed: boolean) => {
+    if (!user || !collectionName) return;
+    await updateDoc(doc(db, collectionName, id), {
+      completed: !completed,
+    });
   };
 
-  const handleToggle = (id: string) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
+  if (!collectionName) {
+    return <div>Setting up your personal todo list...</div>;
+  }
+
   return (
+ 
     <HomeView
       todos={todos}
       onDelete={handleDelete}
@@ -63,6 +93,7 @@ const HomeContainer: React.FC = () => {
       onToggle={handleToggle}
       inputValue={inputValue}
     />
+
   );
 };
 

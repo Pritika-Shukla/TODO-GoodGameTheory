@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const SignupContainer = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();  // Access signUp from context
+  const { signUp } = useAuth();  
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [signupForm, setSignupForm] = useState({
@@ -19,7 +19,7 @@ const SignupContainer = () => {
     setError(null);
 
     try {
-      await signUp(email, password);  // Call signUp with parameters directly
+      await signUp(email, password);  
       navigate("/home");
     } catch (error) {
       const errorMessage =
@@ -37,14 +37,14 @@ const SignupContainer = () => {
 
   return (
     <div className="flex justify-center items-center mx-auto h-screen">
-      <SignUpView
+   
+      <SignUpView 
         email={signupForm.email}
         password={signupForm.password}
         handleChange={handleChange}
         onClick={handleSubmit}
         error={error}
-        loading={loading}
-      />
+        loading={loading} confirmPassword={""}      />
     </div>
   );
 };

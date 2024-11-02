@@ -1,10 +1,12 @@
-
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import {jwtDecode} from 'jwt-decode';
-import { signUp as signUpService, logIn as logInService, logOut as logOutService} from "../FirebaseAuth";
+import axios from "axios";
+import { firebaseConfig } from "../../utils/firebaseConfig";
+
 
 interface User {
+  [x: string]: string;
   email: string;
   uid: string;
 }
@@ -22,22 +24,46 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const signUp = async (email: string, password: string) => {
-    const newUser = await signUpService(email, password);
-    setUser(newUser);
-    return newUser;
+   const signUp = async (email: string, password: string) => {
+    try {
+      const response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+        email,
+        password,
+        returnSecureToken: true,
+      });
+      const { idToken } = response.data;
+      const decodedToken = jwtDecode(idToken) as { user_id: string; email: string };
+      Cookies.set('access_token', idToken);
+      const newUser = { email: decodedToken.email, uid: decodedToken.user_id };
+      setUser(newUser);
+      return newUser;
+      return { email: decodedToken.email, uid: decodedToken.user_id };
+    } catch (error) {
+      console.error("Sign Up Error", error);
+      throw error;
+    }
   };
 
-  const logIn = async (email: string, password: string) => {
-    const loggedInUser = await logInService(email, password);
-    setUser(loggedInUser);
-    return loggedInUser;
+   const logIn = async (email: string, password: string) => {
+    try {
+      const response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseConfig.apiKey}`, {
+        email,
+        password,
+        returnSecureToken: true,
+      });
+      const { idToken } = response.data;
+      const decodedToken = jwtDecode(idToken) as { user_id: string; email: string };
+      Cookies.set('access_token', idToken);
+      const loggedInUser = { email: decodedToken.email, uid: decodedToken.user_id };
+      setUser(loggedInUser); 
+      return loggedInUser;
+      return { email: decodedToken.email, uid: decodedToken.user_id };
+    } catch (error) {
+      console.error("Login Error", error);
+      throw error;
+    }
   };
-
-  const logOut = () => {
-    logOutService();
-    setUser(null);
-  };
+ 
 
   const isAuthenticated = () => !!user;
 
@@ -49,18 +75,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser({ email: decodedToken.email, uid: decodedToken.user_id });
       } catch (error) {
         console.error("Error decoding token", error);
-        logOut();
+      
       }
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signUp, logIn, logOut, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, signUp, logIn, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
 };
-export default AuthContext;
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");

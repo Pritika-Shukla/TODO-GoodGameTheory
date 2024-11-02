@@ -10,6 +10,7 @@ type SignUpProps = {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   error?: string | null;
+  loading?: boolean;
 };
 
 const SignUpView = ({
@@ -19,6 +20,7 @@ const SignUpView = ({
   className,
   onClick,
   error,
+  loading,
 }: SignUpProps) => {
   const navigate = useNavigate();
   return (
